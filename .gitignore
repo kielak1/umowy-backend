@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+
+# Env
+venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# MacOS
+.DS_Store
+
+# Pytest
+htmlcov/
+.coverage
+
+# Migrations (opcjonalnie, tylko jeśli nie chcesz trzymać ich w repozytorium)
+# **/migrations/
+# !**/migrations/__init__.py
