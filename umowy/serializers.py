@@ -6,9 +6,12 @@ class KontaktSerializer(serializers.ModelSerializer):
         model = Kontakt
         fields = '__all__'
 
+<<<<<<< HEAD
 from rest_framework import serializers
 from .models import Umowa, Kontrahent
 
+=======
+>>>>>>> ceb8943 (nginx skonfigurowany)
 class KontrahentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kontrahent
