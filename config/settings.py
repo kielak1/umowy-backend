@@ -150,3 +150,7 @@ DATABASES = {
 }
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+import os
+
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split()
