@@ -16,19 +16,25 @@ class UmowaSerializer(serializers.ModelSerializer):
     kontrahent_id = serializers.PrimaryKeyRelatedField(
         queryset=Kontrahent.objects.all(),
         source='kontrahent',
-        write_only=True
+        write_only=True,
+        required=False  # Dodajemy required=False
     )
 
     class Meta:
         model = Umowa
         fields = [
-            'id',
-            'numer',
-            'przedmiot',
-            'data_zawarcia',
-            'czy_wymaga_kontynuacji',
-            'wymagana_data_zawarcia_kolejnej_umowy',
-            'czy_spelnia_wymagania_dora',
-            'kontrahent',
-            'kontrahent_id',
+            'id', 'numer', 'przedmiot', 'data_zawarcia',
+            'czy_wymaga_kontynuacji', 'wymagana_data_zawarcia_kolejnej_umowy',
+            'czy_spelnia_wymagania_dora', 'kontrahent', 'kontrahent_id'
         ]
+
+    def update(self, instance, validated_data):
+        kontrahent = validated_data.pop('kontrahent', None)
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if kontrahent:
+            instance.kontrahent = kontrahent
+
+        instance.save()
+        return instance
