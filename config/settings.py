@@ -105,9 +105,10 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # Na dole settings.py
-# if not DEBUG:
-#     # Railway potrzebuje, żeby Django serwował statiki samemu
-#     from whitenoise.middleware import WhiteNoiseMiddleware
-#     MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+if not DEBUG:
+    # Railway potrzebuje, żeby Django serwował statiki samemu
+    from whitenoise.middleware import WhiteNoiseMiddleware
+    MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
-#     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+
