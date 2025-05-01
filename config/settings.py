@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+from datetime import timedelta
 
 try:
     from decouple import config
@@ -30,7 +31,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
+    'rest_framework',    
+    'rest_framework_simplejwt',
+    'authz',
     'corsheaders',
     'umowy',
 ]
@@ -75,6 +78,19 @@ DATABASES = {
         'HOST': DB_HOST,
         'PORT': DB_PORT,
     }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
 AUTH_PASSWORD_VALIDATORS = [
