@@ -3,6 +3,9 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from umowy.views import KontaktViewSet, KontrahentViewSet, UmowaViewSet
 from django.http import JsonResponse
+from django.conf import settings
+from django.conf.urls.static import static
+from authz.views import UserViewSet, OrganizationalUnitViewSet
 
 def health_check(request):
     return JsonResponse({"status": "ok"})
@@ -11,6 +14,8 @@ router = DefaultRouter()
 router.register(r'kontakty', KontaktViewSet)
 router.register(r'kontrahenci', KontrahentViewSet)
 router.register(r'umowy', UmowaViewSet)
+router.register(r'users', UserViewSet, basename='user')
+router.register(r'orgunits', OrganizationalUnitViewSet, basename='orgunit')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -18,8 +23,8 @@ urlpatterns = [
     path('healthz/', health_check),
 ]
 
-
-from django.conf import settings
-from django.conf.urls.static import static
-
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+
+

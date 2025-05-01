@@ -1,5 +1,6 @@
 from django.db import models
-from django.db import models
+from django.contrib.auth.models import User
+from authz.models import OrganizationalUnit  # import z authz
 
 class Kontakt(models.Model):
     imie = models.CharField(max_length=100)
@@ -25,6 +26,9 @@ class Umowa(models.Model):
     wymagana_data_zawarcia_kolejnej_umowy = models.DateField(null=True, blank=True)
     czy_spelnia_wymagania_dora = models.BooleanField(default=False)
     kontrahent = models.ForeignKey(Kontrahent, on_delete=models.CASCADE, related_name='umowy')
+
+    opiekun = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='prowadzone_umowy')
+    org_unit = models.ForeignKey(OrganizationalUnit, on_delete=models.SET_NULL, null=True, blank=True, related_name='umowy')
 
     def __str__(self):
         return self.numer
