@@ -1,14 +1,18 @@
 from django.urls import path
-from rest_framework_simplejwt.views import (
- 
-    TokenRefreshView,
+from .views import (
+    CustomTokenObtainPairView,
+    CookieTokenObtainPairView,
+    CookieTokenRefreshView
 )
-
-
-
-from .views import CustomTokenObtainPairView
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
-    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Zwykłe logowanie przez body (opcjonalnie, jeśli nadal chcesz)
+    path('token/', CookieTokenObtainPairView.as_view(), name='token_obtain_pair_cookie'),
+    
+    # Odświeżenie tokena z HttpOnly cookie
+    path('token/refresh/', CookieTokenRefreshView.as_view(), name='token_refresh_cookie'),
+
+    # (opcjonalnie) dostępne dla testów klasyczne TokenRefreshView
+    path('token/refresh_raw/', TokenRefreshView.as_view(), name='token_refresh_raw'),
 ]
