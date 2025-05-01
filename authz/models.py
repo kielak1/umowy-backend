@@ -27,8 +27,8 @@ class PermissionType(models.Model):
         return self.name
 
 class SecuredObjectType(models.Model):
-    code = models.CharField(max_length=100, unique=True)  # np. 'umowa'
-    label = models.CharField(max_length=255)  # np. 'Umowy'
+    code = models.CharField(max_length=100, unique=True)  # np. 'contracts', 'admin'
+    label = models.CharField(max_length=255)  # np. 'Umowy', 'Panel administracyjny'
 
     def __str__(self):
         return self.label
@@ -54,7 +54,9 @@ class UserProfile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='local')
+    default_page = models.CharField(max_length=100, blank=True, null=True, help_text="Domyślna strona interfejsu użytkownika")
 
     def __str__(self):
         return f"Profil: {self.user.username} ({self.source})"
+
 
