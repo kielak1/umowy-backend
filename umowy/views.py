@@ -26,18 +26,24 @@ class UmowaViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Umowa.objects.prefetch_related('zmiany', 'zamowienia', 'kontrahent')
 
-
 class ZmianaUmowyViewSet(viewsets.ModelViewSet):
+    queryset = ZmianaUmowy.objects.all()
     serializer_class = ZmianaUmowySerializer
 
     def get_queryset(self):
         umowa_id = self.kwargs.get('umowa_pk') or self.request.query_params.get('umowa_id')
-        return ZmianaUmowy.objects.filter(umowa_id=umowa_id) if umowa_id else ZmianaUmowy.objects.none()
+        if umowa_id:
+            return self.queryset.filter(umowa_id=umowa_id)
+        return self.queryset
 
 
 class ZamowienieViewSet(viewsets.ModelViewSet):
+    queryset = Zamowienie.objects.all()
     serializer_class = ZamowienieSerializer
 
     def get_queryset(self):
+        # jeśli jest umowa_id w URL/query – filtrujemy tylko wtedy
         umowa_id = self.kwargs.get('umowa_pk') or self.request.query_params.get('umowa_id')
-        return Zamowienie.objects.filter(umowa_id=umowa_id) if umowa_id else Zamowienie.objects.none()
+        if umowa_id:
+            return self.queryset.filter(umowa_id=umowa_id)
+        return self.queryset
