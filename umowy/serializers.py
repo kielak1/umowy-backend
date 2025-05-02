@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from authz.models import OrganizationalUnit
-from .models import Kontakt, Kontrahent, Umowa
+from .models import Kontakt, Kontrahent, Umowa, ZmianaUmowy, Zamowienie
 
 class KontaktSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,7 +11,8 @@ class KontaktSerializer(serializers.ModelSerializer):
 class KontrahentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kontrahent
-        fields = ['id', 'nazwa_kontrahenta']
+        fields = ['id', 'nazwa']
+
 
 class OrganizationalUnitSerializer(serializers.ModelSerializer):
     class Meta:
@@ -22,6 +23,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username']
+
 
 class UmowaSerializer(serializers.ModelSerializer):
     kontrahent = KontrahentSerializer(read_only=True)
@@ -40,32 +42,39 @@ class UmowaSerializer(serializers.ModelSerializer):
         required=False
     )
 
-    org_unit = OrganizationalUnitSerializer(read_only=True)
-    org_unit_id = serializers.PrimaryKeyRelatedField(
+    jednostka_organizacyjna = OrganizationalUnitSerializer(read_only=True)
+    jednostka_organizacyjna_id = serializers.PrimaryKeyRelatedField(
         queryset=OrganizationalUnit.objects.all(),
-        source='org_unit',
+        source='jednostka_organizacyjna',
         write_only=True,
         required=False
     )
 
+    najnowsza_zmiana = serializers.SerializerMethodField()
+
     class Meta:
         model = Umowa
         fields = [
-            'id', 'numer', 'przedmiot', 'data_zawarcia',
-            'czy_wymaga_kontynuacji', 'wymagana_data_zawarcia_kolejnej_umowy',
-            'czy_spelnia_wymagania_dora',
+            'id', 'numer',
+            'czy_ramowa', 'czy_dotyczy_konkretnych_uslug',
+            'czy_spelnia_dora', 'czy_wymaga_kontynuacji', 'wymagana_data_kontynuacji',
             'kontrahent', 'kontrahent_id',
             'opiekun', 'opiekun_id',
-            'org_unit', 'org_unit_id',
+            'jednostka_organizacyjna', 'jednostka_organizacyjna_id',
+            'najnowsza_zmiana',
         ]
 
-    def update(self, instance, validated_data):
-        for key in ['kontrahent', 'opiekun', 'org_unit']:
-            if key in validated_data:
-                setattr(instance, key, validated_data.pop(key))
+    def get_najnowsza_zmiana(self, obj):
+        zmiana = obj.zmiany.order_by('-data_zawarcia').first()
+        return ZmianaUmowySerializer(zmiana).data if zmiana else None
 
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
 
-        instance.save()
-        return instance
+class ZmianaUmowySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZmianaUmowy
+        fields = '__all__'
+
+class ZamowienieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Zamowienie
+        fields = '__all__'
