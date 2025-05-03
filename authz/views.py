@@ -1,34 +1,33 @@
 from django.contrib.auth.models import User
-from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, status, viewsets
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from authz.models import OrganizationalUnit
 from authz.serializers import OrganizationalUnitSerializer, UserSerializer
 from .models import PermissionType, SecuredObjectType, UserPermission
-from .serializers import PermissionTypeSerializer, SecuredObjectTypeSerializer, UserPermissionSerializer
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+from .serializers import (
+    AdminUserCreateSerializer,
+    CustomTokenObtainPairSerializer,
+    PermissionTypeSerializer,
+    SecuredObjectTypeSerializer,
+    UserPermissionSerializer,
+    UserWithProfileSerializer,
+)
+class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserWithProfileSerializer
+
 
 class OrganizationalUnitViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = OrganizationalUnit.objects.all()
     serializer_class = OrganizationalUnitSerializer
 
-
-from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import CustomTokenObtainPairSerializer
-
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
-
-
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .serializers import CustomTokenObtainPairSerializer
-from rest_framework.response import Response
-from rest_framework import status
 
 class CookieTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
@@ -49,7 +48,6 @@ class CookieTokenObtainPairView(TokenObtainPairView):
             del response.data["refresh"]
 
         return response
-
 
 class CookieTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
@@ -75,11 +73,6 @@ class UserPermissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserPermission.objects.all()
     serializer_class = UserPermissionSerializer
-
-
-from rest_framework import generics
-from rest_framework.permissions import IsAdminUser
-from .serializers import AdminUserCreateSerializer
 
 class AdminUserCreateView(generics.CreateAPIView):
     permission_classes = [IsAdminUser]

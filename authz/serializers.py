@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import OrganizationalUnit, PermissionType, SecuredObjectType, UserPermission
+from .models import OrganizationalUnit, PermissionType, SecuredObjectType, UserPermission, UserProfile
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -49,3 +49,33 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
         return User.objects.create_user(**validated_data)
 
 
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = ['source', 'default_page']
+
+class UserWithProfileSerializer(serializers.ModelSerializer):
+    profile = UserProfileSerializer()
+
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'profile']
+
+    def update(self, instance, validated_data):
+        profile_data = validated_data.pop('profile', {})
+        password = validated_data.pop('password', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        profile = instance.profile
+        for attr, value in profile_data.items():
+            setattr(profile, attr, value)
+        profile.save()
+
+        if password:
+            instance.set_password(password)
+            instance.save()
+
+        return instance
