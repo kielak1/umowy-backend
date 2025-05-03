@@ -15,6 +15,9 @@ from .serializers import (
     UserPermissionSerializer,
     UserWithProfileSerializer,
 )
+from rest_framework.decorators import action
+
+
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
@@ -73,8 +76,18 @@ class UserPermissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserPermission.objects.all()
     serializer_class = UserPermissionSerializer
+    @action(detail=False, methods=["get"], url_path="me")
+    def my_permissions(self, request):
+        perms = UserPermission.objects.filter(user=request.user).select_related("object_type", "permission")
+        data = [
+            {"object": p.object_type.code, "type": p.permission.name}
+            for p in perms
+        ]
+#      print(f"Uprawnienia użytkownika {request.user.username}: {data}")       
+        return Response(data)
 
 class AdminUserCreateView(generics.CreateAPIView):
     permission_classes = [IsAdminUser]
     serializer_class = AdminUserCreateSerializer
     queryset = User.objects.all()
+
