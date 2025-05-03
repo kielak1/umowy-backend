@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from .models import (
     Kontakt, Kontrahent, Umowa,
     ZmianaUmowy, Zamowienie
@@ -10,23 +11,28 @@ from .serializers import (
 
 
 class KontaktViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Kontakt.objects.all()
     serializer_class = KontaktSerializer
 
 
 class KontrahentViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Kontrahent.objects.all()
     serializer_class = KontrahentSerializer
 
 
 class UmowaViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Umowa.objects.all()
     serializer_class = UmowaSerializer
 
     def get_queryset(self):
         return Umowa.objects.prefetch_related('zmiany', 'zamowienia', 'kontrahent')
 
+
 class ZmianaUmowyViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = ZmianaUmowy.objects.all()
     serializer_class = ZmianaUmowySerializer
 
@@ -38,6 +44,7 @@ class ZmianaUmowyViewSet(viewsets.ModelViewSet):
 
 
 class ZamowienieViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = Zamowienie.objects.all()
     serializer_class = ZamowienieSerializer
 

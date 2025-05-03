@@ -1,13 +1,16 @@
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from authz.models import OrganizationalUnit
 from authz.serializers import UserSerializer, OrganizationalUnitSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 class OrganizationalUnitViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated]
     queryset = OrganizationalUnit.objects.all()
     serializer_class = OrganizationalUnitSerializer
 
