@@ -1,8 +1,11 @@
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.models import User
+
 from authz.models import OrganizationalUnit
-from authz.serializers import UserSerializer, OrganizationalUnitSerializer
+from authz.serializers import OrganizationalUnitSerializer, UserSerializer
+from .models import PermissionType, SecuredObjectType, UserPermission
+from .serializers import PermissionTypeSerializer, SecuredObjectTypeSerializer, UserPermissionSerializer
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
@@ -57,3 +60,18 @@ class CookieTokenRefreshView(TokenRefreshView):
 
         request.data["refresh"] = refresh_token
         return super().post(request, *args, **kwargs)
+
+class PermissionTypeViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = PermissionType.objects.all()
+    serializer_class = PermissionTypeSerializer
+
+class SecuredObjectTypeViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = SecuredObjectType.objects.all()
+    serializer_class = SecuredObjectTypeSerializer
+
+class UserPermissionViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    queryset = UserPermission.objects.all()
+    serializer_class = UserPermissionSerializer

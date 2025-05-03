@@ -1,6 +1,8 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import OrganizationalUnit
+from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+from .models import OrganizationalUnit, PermissionType, SecuredObjectType, UserPermission
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -11,8 +13,7 @@ class OrganizationalUnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganizationalUnit
         fields = ['id', 'name']
-        
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
@@ -21,3 +22,18 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         if hasattr(self.user, 'userprofile'):
             data['organizational_unit'] = self.user.userprofile.organizational_unit.name
         return data
+
+class PermissionTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PermissionType
+        fields = '__all__'
+
+class SecuredObjectTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecuredObjectType
+        fields = '__all__'
+
+class UserPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserPermission
+        fields = '__all__'
