@@ -56,10 +56,11 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserWithProfileSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer()
+    password = serializers.CharField(write_only=True, required=False, min_length=8)
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'profile']
+        fields = ['id', 'username', 'email', 'profile', 'password']
 
     def update(self, instance, validated_data):
         profile_data = validated_data.pop('profile', {})
