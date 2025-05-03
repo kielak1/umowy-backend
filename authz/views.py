@@ -75,3 +75,13 @@ class UserPermissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserPermission.objects.all()
     serializer_class = UserPermissionSerializer
+
+
+from rest_framework import generics
+from rest_framework.permissions import IsAdminUser
+from .serializers import AdminUserCreateSerializer
+
+class AdminUserCreateView(generics.CreateAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = AdminUserCreateSerializer
+    queryset = User.objects.all()

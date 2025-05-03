@@ -16,3 +16,9 @@ urlpatterns = [
     # (opcjonalnie) dostępne dla testów klasyczne TokenRefreshView
     path('token/refresh_raw/', TokenRefreshView.as_view(), name='token_refresh_raw'),
 ]
+
+from .views import AdminUserCreateView  # dopisz do istniejących importów
+
+urlpatterns += [
+    path('admin/users/create/', AdminUserCreateView.as_view(), name='admin_user_create'),
+]
