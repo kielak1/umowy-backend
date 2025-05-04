@@ -24,7 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserWithProfileSerializer
 
 
-class OrganizationalUnitViewSet(viewsets.ReadOnlyModelViewSet):
+class OrganizationalUnitViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = OrganizationalUnit.objects.all()
     serializer_class = OrganizationalUnitSerializer
