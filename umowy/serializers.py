@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from authz.models import OrganizationalUnit
-from .models import Kontakt, Kontrahent, Umowa, ZmianaUmowy, Zamowienie
+from .models import Kontakt, Kontrahent, Umowa, ZmianaUmowy, Zamowienie, SlownikKategoriaUmowy, SlownikWlasciciel, SlownikStatusUmowy, SlownikKlasyfikacjaUmowy, SlownikObszarFunkcjonalny              
 
 class KontaktSerializer(serializers.ModelSerializer):
     class Meta:
@@ -70,9 +70,51 @@ class UmowaSerializer(serializers.ModelSerializer):
 
 
 class ZmianaUmowySerializer(serializers.ModelSerializer):
+    kategoria = serializers.StringRelatedField(read_only=True)
+    kategoria_id = serializers.PrimaryKeyRelatedField(
+        queryset=SlownikKategoriaUmowy.objects.all(),
+        source='kategoria',
+        write_only=True,
+        required=False
+    )
+
+    wlasciciel = serializers.StringRelatedField(read_only=True)
+    wlasciciel_id = serializers.PrimaryKeyRelatedField(
+        queryset=SlownikWlasciciel.objects.all(),
+        source='wlasciciel',
+        write_only=True,
+        required=False
+    )
+
+    status = serializers.StringRelatedField(read_only=True)
+    status_id = serializers.PrimaryKeyRelatedField(
+        queryset=SlownikStatusUmowy.objects.all(),
+        source='status',
+        write_only=True,
+        required=False
+    )
+
+    klasyfikacja = serializers.StringRelatedField(read_only=True)
+    klasyfikacja_id = serializers.PrimaryKeyRelatedField(
+        queryset=SlownikKlasyfikacjaUmowy.objects.all(),
+        source='klasyfikacja',
+        write_only=True,
+        required=False
+    )
+
+    obszary_funkcjonalne = serializers.StringRelatedField(many=True, read_only=True)
+    obszary_funkcjonalne_ids = serializers.PrimaryKeyRelatedField(
+        queryset=SlownikObszarFunkcjonalny.objects.all(),
+        many=True,
+        source='obszary_funkcjonalne',
+        write_only=True,
+        required=False
+    )
+
     class Meta:
         model = ZmianaUmowy
         fields = '__all__'
+
 
 class ZamowienieSerializer(serializers.ModelSerializer):
     class Meta:
