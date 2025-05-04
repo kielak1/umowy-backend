@@ -10,9 +10,15 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username']
 
 class OrganizationalUnitSerializer(serializers.ModelSerializer):
+    parent = serializers.PrimaryKeyRelatedField(
+        required=False,  # <-- to dodaj
+        allow_null=True,
+        queryset=OrganizationalUnit.objects.all()
+    )
+
     class Meta:
         model = OrganizationalUnit
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'parent']
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

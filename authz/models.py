@@ -4,10 +4,17 @@ from django.contrib.auth.models import User
 
 class OrganizationalUnit(models.Model):
     name = models.CharField(max_length=255)
-    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='children')
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL, 
+        related_name='children'
+    )
 
     def __str__(self):
         return self.name
+
 
 class PermissionType(models.Model):
     PERMISSION_CHOICES = [
@@ -37,7 +44,7 @@ class UserPermission(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     object_type = models.ForeignKey(SecuredObjectType, on_delete=models.CASCADE)
     org_unit = models.ForeignKey(OrganizationalUnit, on_delete=models.CASCADE)
-    permission = models.ForeignKey(PermissionType, on_delete=models.CASCADE)
+    permission = models.ForeignKey(PermissionType, on_delete=models.PROTECT)
 
     class Meta:
         unique_together = ('user', 'object_type', 'org_unit', 'permission')
