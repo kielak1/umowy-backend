@@ -72,10 +72,12 @@ class SecuredObjectTypeViewSet(viewsets.ModelViewSet):
     queryset = SecuredObjectType.objects.all()
     serializer_class = SecuredObjectTypeSerializer
 
+
 class UserPermissionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     queryset = UserPermission.objects.all()
     serializer_class = UserPermissionSerializer
+
     @action(detail=False, methods=["get"], url_path="me")
     def my_permissions(self, request):
         perms = UserPermission.objects.filter(user=request.user).select_related("object_type", "permission")
@@ -83,8 +85,11 @@ class UserPermissionViewSet(viewsets.ModelViewSet):
             {"object": p.object_type.code, "type": p.permission.name}
             for p in perms
         ]
-#      print(f"Uprawnienia użytkownika {request.user.username}: {data}")       
-        return Response(data)
+
+        return Response({
+            "permissions": data,
+            "default_page": request.user.profile.default_page or "/"
+        })
 
 class AdminUserCreateView(generics.CreateAPIView):
     permission_classes = [IsAdminUser]
