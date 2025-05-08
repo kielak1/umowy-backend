@@ -68,14 +68,14 @@ class UmowaSerializer(serializers.ModelSerializer):
         zmiana = obj.zmiany.order_by('-data_zawarcia').first()
         return ZmianaUmowySerializer(zmiana).data if zmiana else None
 
-
 class ZmianaUmowySerializer(serializers.ModelSerializer):
     kategoria = serializers.StringRelatedField(read_only=True)
     kategoria_id = serializers.PrimaryKeyRelatedField(
         queryset=SlownikKategoriaUmowy.objects.all(),
         source='kategoria',
         write_only=True,
-        required=False
+        required=False,
+        allow_null=True
     )
 
     wlasciciel = serializers.StringRelatedField(read_only=True)
@@ -83,7 +83,8 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         queryset=SlownikWlasciciel.objects.all(),
         source='wlasciciel',
         write_only=True,
-        required=False
+        required=False,
+        allow_null=True
     )
 
     status = serializers.StringRelatedField(read_only=True)
@@ -91,7 +92,8 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         queryset=SlownikStatusUmowy.objects.all(),
         source='status',
         write_only=True,
-        required=False
+        required=False,
+        allow_null=True
     )
 
     klasyfikacja = serializers.StringRelatedField(read_only=True)
@@ -99,7 +101,8 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         queryset=SlownikKlasyfikacjaUmowy.objects.all(),
         source='klasyfikacja',
         write_only=True,
-        required=False
+        required=False,
+        allow_null=True
     )
 
     obszary_funkcjonalne = serializers.StringRelatedField(many=True, read_only=True)
