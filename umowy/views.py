@@ -34,11 +34,15 @@ class KontrahentViewSet(viewsets.ModelViewSet):
 
 class UmowaViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Umowa.objects.all()
     serializer_class = UmowaSerializer
+    queryset = Umowa.objects.none()  
 
     def get_queryset(self):
-        return Umowa.objects.prefetch_related('zmiany', 'zamowienia', 'kontrahent')
+        return (
+            Umowa.objects
+            .prefetch_related("zmiany", "zamowienia", "kontrahent")
+            .order_by("-id")
+        )
 
 
 class ZmianaUmowyViewSet(viewsets.ModelViewSet):
