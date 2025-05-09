@@ -47,19 +47,19 @@ class UmowaViewSet(viewsets.ModelViewSet):
 
 class ZmianaUmowyViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = ZmianaUmowy.objects.all()
     serializer_class = ZmianaUmowySerializer
+    queryset = ZmianaUmowy.objects.none()  # wymagane dla routera
     http_method_names = ['get', 'post', 'patch', 'put', 'delete']
 
     def get_queryset(self):
+        base = ZmianaUmowy.objects.all().order_by("-id")
         if self.action == "list":
             umowa_id = self.kwargs.get('umowa_pk') or self.request.query_params.get('umowa_id')
             if umowa_id:
-                return self.queryset.filter(umowa_id=umowa_id)
-        return self.queryset
+                return base.filter(umowa_id=umowa_id)
+        return base
 
     def partial_update(self, request, *args, **kwargs):
-        # print("🛠️ partial_update WYWOŁANE dla ZmianaUmowy")
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
 
@@ -68,24 +68,20 @@ class ZmianaUmowyViewSet(viewsets.ModelViewSet):
             print("❌ BŁĘDY SERIALIZERA:", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        # print("✅ VALIDATED DATA:", serializer.validated_data)
         self.perform_update(serializer)
-        # print("✅ PO ZAPISIE:", serializer.data)
-
         return Response(serializer.data)
-
-
+    
 class ZamowienieViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = Zamowienie.objects.all()
     serializer_class = ZamowienieSerializer
+    queryset = Zamowienie.objects.none()  # wymagane przez router DRF
 
     def get_queryset(self):
+        base = Zamowienie.objects.all().order_by("-id")
         umowa_id = self.kwargs.get('umowa_pk') or self.request.query_params.get('umowa_id')
         if umowa_id:
-            return self.queryset.filter(umowa_id=umowa_id)
-        return self.queryset
-
+            return base.filter(umowa_id=umowa_id)
+        return base
 
 # === SŁOWNIKI ===
 
