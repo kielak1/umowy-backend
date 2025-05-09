@@ -3,6 +3,32 @@ from django.contrib.auth.models import User
 from authz.models import OrganizationalUnit
 from .models import Kontakt, Kontrahent, Umowa, ZmianaUmowy, Zamowienie, SlownikKategoriaUmowy, SlownikWlasciciel, SlownikStatusUmowy, SlownikKlasyfikacjaUmowy, SlownikObszarFunkcjonalny              
 
+
+class SlownikKategoriaUmowySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlownikKategoriaUmowy
+        fields = ['id', 'nazwa']
+
+class SlownikWlascicielSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlownikWlasciciel
+        fields = ['id', 'nazwa']
+
+class SlownikStatusUmowySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlownikStatusUmowy
+        fields = ['id', 'nazwa']
+
+class SlownikKlasyfikacjaUmowySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlownikKlasyfikacjaUmowy
+        fields = ['id', 'nazwa']
+
+class SlownikObszarFunkcjonalnySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SlownikObszarFunkcjonalny
+        fields = ['id', 'nazwa']
+
 class KontaktSerializer(serializers.ModelSerializer):
     class Meta:
         model = Kontakt
@@ -69,7 +95,8 @@ class UmowaSerializer(serializers.ModelSerializer):
         return ZmianaUmowySerializer(zmiana).data if zmiana else None
 
 class ZmianaUmowySerializer(serializers.ModelSerializer):
-    kategoria = serializers.StringRelatedField(read_only=True)
+
+    kategoria = SlownikKategoriaUmowySerializer(read_only=True)
     kategoria_id = serializers.PrimaryKeyRelatedField(
         queryset=SlownikKategoriaUmowy.objects.all(),
         source='kategoria',
@@ -78,7 +105,7 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
-    wlasciciel = serializers.StringRelatedField(read_only=True)
+    wlasciciel = SlownikWlascicielSerializer(read_only=True)
     wlasciciel_id = serializers.PrimaryKeyRelatedField(
         queryset=SlownikWlasciciel.objects.all(),
         source='wlasciciel',
@@ -87,7 +114,7 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
-    status = serializers.StringRelatedField(read_only=True)
+    status = SlownikStatusUmowySerializer(read_only=True)
     status_id = serializers.PrimaryKeyRelatedField(
         queryset=SlownikStatusUmowy.objects.all(),
         source='status',
@@ -96,7 +123,7 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
-    klasyfikacja = serializers.StringRelatedField(read_only=True)
+    klasyfikacja = SlownikKlasyfikacjaUmowySerializer(read_only=True)
     klasyfikacja_id = serializers.PrimaryKeyRelatedField(
         queryset=SlownikKlasyfikacjaUmowy.objects.all(),
         source='klasyfikacja',
@@ -105,7 +132,7 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         allow_null=True
     )
 
-    obszary_funkcjonalne = serializers.StringRelatedField(many=True, read_only=True)
+    obszary_funkcjonalne = SlownikObszarFunkcjonalnySerializer(many=True, read_only=True)
     obszary_funkcjonalne_ids = serializers.PrimaryKeyRelatedField(
         queryset=SlownikObszarFunkcjonalny.objects.all(),
         many=True,
@@ -114,12 +141,21 @@ class ZmianaUmowySerializer(serializers.ModelSerializer):
         required=False
     )
 
+
     class Meta:
         model = ZmianaUmowy
         fields = '__all__'
 
+    def update(self, instance, validated_data):
+        obszary = validated_data.pop("obszary_funkcjonalne", None)
+        instance = super().update(instance, validated_data)
+        if obszary is not None:
+            instance.obszary_funkcjonalne.set(obszary)
+        return instance
 
 class ZamowienieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zamowienie
         fields = '__all__'
+
+
